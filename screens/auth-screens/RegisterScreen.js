@@ -1,7 +1,7 @@
-import React, {Component, useRef} from 'react';
+import React, {Component, useRef, useState} from 'react';
 var styles = require('../../assets/files/Styles');
 import {Alert, Dimensions, Image, TouchableOpacity, FlatList, ScrollView, StatusBar} from 'react-native';
-import { Container, Body, Footer, Header, Input, Item, Left, Text, Title, Right, View, Button, Toast, Form} from 'native-base';
+import { Container, Body, Footer, Header, Input, Item, Left, Text, Title, Right, View, Button, Toast, Form, Spinner} from 'native-base';
 import Icono from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -10,15 +10,43 @@ import ColorsApp from '../../utils/ColorsApp';
 import Strings from '../../utils/Strings';
 import { useForm, Controller } from "react-hook-form";
 import {Grid, Row, Col } from 'react-native-easy-grid';
+import {auth} from "../../config/firebaseConfig"
 
 const width = Dimensions.get('window').width;
 
 
 const RegisterScreen = () => {
+ const [isLoading, setIsLoading] = useState(false)
  const { control, handleSubmit, formState: { errors } , watch} = useForm();
-  const onSubmit = data => console.log(data);
-  const password = useRef({});
+ const password = useRef({});
   password.current = watch("password", "");
+	
+  const errorHandler = ((e)=>{
+	  setIsLoading(false)
+            console.log(e);
+            if(e.code == 'auth/email-already-in-use'){
+				Toast.show({ text: `${Strings.ST36}`, position: 'bottom', buttonText: `${Strings.ST33}` })
+               
+            } else {
+				Toast.show({ text: `${Strings.ST32}`, position: 'bottom', buttonText: `${Strings.ST33}` })
+            }
+
+        })
+	
+ const onSubmit = async (data) => {
+	  setIsLoading(true)
+	  const name = data.name
+	  const email = data.email
+	  const password = data.password
+	  
+	  await auth.createUserWithEmailAndPassword(email, password).then((response) => {
+            auth.currentUser.updateProfile({
+                displayName : name,
+            }).then(()=>{
+            }).catch(errorHandler);
+
+        }).catch(errorHandler)
+ } 
 
   return(
      <Container style={styles.background_general}>
@@ -145,7 +173,12 @@ const RegisterScreen = () => {
              <Button onPress={handleSubmit(onSubmit)} style={{ marginTop: 15,  marginBottom: 15, alignSelf: 'center'}} transparent> 
                 <LinearGradient colors={[ColorsApp.SECOND, ColorsApp.PRIMARY]} start={[0, 0]} end={[1, 0]} style={styles.button_auth}>  
                     <Text style={{color: '#FFFFFF', fontWeight: 'bold', fontSize: 14,}}>
-                      {Strings.ST28.toUpperCase()}
+                     {isLoading?
+						<Spinner color='white' /> 
+						: <Text style={{color: '#FFFFFF', fontWeight: 'bold', fontSize: 14,}}>
+							{Strings.ST28.toUpperCase() }     
+                    	  </Text>
+					}
                     </Text>
                  </LinearGradient>
              </Button>

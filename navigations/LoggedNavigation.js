@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 var styles = require('../assets/files/Styles');
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import {WalletScreen, UserListScreen, MatchListScreen, VideoListScreen} from "../screens/logged-screens"
+import {WalletScreen, UserListScreen, MatchListScreen, VideoListScreen, SettingScreen} from "../screens/logged-screens"
 import { AntDesign } from '@expo/vector-icons';
 
 
@@ -46,6 +46,14 @@ const LoggedNavigation = () => {
           ),
         }}
           />
+	        <Tab.Screen name="SettingScreen" component={SettingScreen} 
+             options={{
+          tabBarLabel: 'SettingScreen',
+          tabBarIcon: ({color}) => (
+            <AntDesign name="setting" style={{...styles.iconSidemenu, color}}/>
+          ),
+        }}
+          />	  
       </Tab.Navigator>
     </NavigationContainer>
   );

@@ -833,10 +833,13 @@ margin: 15
 //////////////////////// START
 
 button_start:{
-minWidth: 250,
+width: width * 0.80,
 backgroundColor: 'transparent',
 borderWidth: 1,
 borderColor: SecondColor,
+	alignItems: 'center',
+alignContent: 'center',
+justifyContent: 'center',
 borderRadius: 25,
 marginBottom: 11,
 height: 53,
@@ -846,7 +849,8 @@ elevation: 0,
 shadowOffset: {
   width: 0,
   height: 0
-}
+},
+	
 },
 
 button_start_text:{

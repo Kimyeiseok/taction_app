@@ -14,15 +14,19 @@ const StartScreen = ({navigation}) => {
         <View style={{flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
         <Image source={require('../../assets/images/logo.png')} style={styles.logo_start} resizeMode="contain"/>
         
-        <Button block onPress={()=>navigation.navigate("LoginScreen")} style={styles.button_start}>
+        <TouchableOpacity  onPress={()=>navigation.navigate("LoginScreen")} style={styles.button_start}>
        		 <Text style={styles.button_start_text}>{Strings.ST26.toUpperCase()}</Text>
-        </Button>
+        </TouchableOpacity>
+			
 
-        <TouchableOpacity onPress={()=> navigation.navigate("RegisterScreen")} activeOpacity={1}>
+        <TouchableOpacity onPress={()=> navigation.navigate("RegisterScreen")} >
 			<LinearGradient colors={[ColorsApp.SECOND, ColorsApp.PRIMARY]} start={[0, 0]} end={[1, 0]} style={styles.button_start_2}>
 			<Text style={{color: '#FFFFFF', fontWeight: 'bold', fontSize: 14}}>{Strings.ST27.toUpperCase()}</Text>
 			</LinearGradient>
         </TouchableOpacity>	
+			
+	
+			
         </View>
       </Body>
 		</Container>

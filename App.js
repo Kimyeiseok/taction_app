@@ -9,6 +9,7 @@ import AppLoading from 'expo-app-loading';
 import AppPreLoader from "./components/AppPreLoader";
 import AuthNavigation from "./navigations/AuthNavigation"
 import LoggedNavigation from "./navigations/LoggedNavigation"
+import {auth} from "./config/firebaseConfig"
 
 
 const cacheImages = (images) => {
@@ -41,21 +42,31 @@ const  App = () => {
   
   const loadEnvironment = async () => {
 	  	await Font.loadAsync({
-      Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
-      'Entypo': require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Entypo.ttf'),
-      'FontAwesome': require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome.ttf'),
-      'Ionicons': require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf'),
-      'MaterialCommunityIcons': require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf'),
-      'SimpleLineIcons': require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/SimpleLineIcons.ttf'),
-      'FontAwesome': require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome.ttf')
-    });
-	  
-	  setLoaded(true)
-  }
+			  Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
+			  'Entypo': require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Entypo.ttf'),
+			  'FontAwesome': require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome.ttf'),
+			  'Ionicons': require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf'),
+			  'MaterialCommunityIcons': require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf'),
+			  'SimpleLineIcons': require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/SimpleLineIcons.ttf'),
+			  'FontAwesome': require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome.ttf')
+			});
+	     await auth.onAuthStateChanged((user) => {
+			 console.log('파이어베이스 실행완료')
+			  if(user !== null) {
+				  setLoaded(true)
+				  setIsLogged(true)
+			  } else {
+				  setLoaded(true)
+				  setIsLogged(false)
+			  }
+			})
+ 	}
   
   useEffect(()=>{
 	  loadEnvironment();
-  })
+
+	return loadEnvironment
+  },[])
 
       if (!isReady) {
       return (

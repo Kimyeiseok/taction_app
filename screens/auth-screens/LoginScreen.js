@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
+import React, {Component, useState} from 'react';
 var styles = require('../../assets/files/Styles');
-import {Alert, Dimensions, Image, TouchableOpacity, StatusBar} from 'react-native';
-import { Container, Body, Footer, Header, Input, Item, Left, Text, Title, Right, View, Button, Toast, Label, Form} from 'native-base';
+import {Alert, Dimensions, Image, TouchableOpacity, StatusBar, ActivityIndicator} from 'react-native';
+import { Container, Body, Footer, Header, Input, Item, Left, Text, Title, Right, View, Button, Toast, Label, Form, Spinner} from 'native-base';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import Icono from 'react-native-vector-icons/Ionicons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -10,13 +10,41 @@ import ColorsApp from '../../utils/ColorsApp';
 import Strings from '../../utils/Strings';
 import { useForm, Controller } from "react-hook-form";
 import {Grid, Row, Col } from 'react-native-easy-grid';
+import {auth} from "../../config/firebaseConfig"
 
 const width = Dimensions.get('window').width;
 
 const LoginScreen = ({navigation}) => {
-
+  const [isLoading, setIsLoading] = useState(false)
   const { control, handleSubmit, formState: { errors } } = useForm();
-  const onSubmit = data => console.log(data);
+	
+	
+  const onSubmit = async (data) => {
+	  setIsLoading(true)
+	  const email = data.email
+	  const password = data.password
+	  await auth.signInWithEmailAndPassword(email, password)
+	  .then(user => console.log(user))
+	  .catch((error) => {
+		 		 setIsLoading(false)
+				const errorCode = error.code;
+				const errorMessage = error.message;
+				if (errorCode === 'auth/wrong-password') {
+
+				Toast.show({ text: `${Strings.ST30}`, position: 'bottom', buttonText: `${Strings.ST33}` })
+
+				}
+				else if (errorCode === 'auth/user-not-found') {
+
+				Toast.show({ text: `${Strings.ST31}`, position: 'bottom', buttonText: `${Strings.ST33}` })
+
+				}
+				else{
+				Toast.show({ text: `${Strings.ST32}`, position: 'bottom', buttonText: `${Strings.ST33}` })
+				}
+
+	  });
+  };
 
   return(
     <Container style={styles.background_general}>
@@ -48,7 +76,7 @@ const LoginScreen = ({navigation}) => {
                               message: "invalid email address"
                             }
                  }}
-                defaultValue=""
+                defaultValue="cyonnext@naver.com"
               />
               {errors.email && errors.email.type == "required" &&
                <Text style={{fontSize: 16, color: '#F32013', marginLeft: 25, marginBottom: 15}}>{errors.email.message}</Text>}
@@ -79,7 +107,7 @@ const LoginScreen = ({navigation}) => {
                               message: "too short"
                             }
                  }}
-                defaultValue=""
+                defaultValue="846kim"
               />
               {errors.password && errors.password.type == "required" &&
                <Text style={{fontSize: 16, color: '#F32013', marginLeft: 25, marginBottom: 5}}>{errors.password.message}</Text>}
@@ -87,13 +115,17 @@ const LoginScreen = ({navigation}) => {
                <Text style={{fontSize: 16, color: '#F32013', marginLeft: 25, marginBottom: 5}}>{errors.password.message}</Text>}
 		      	</Form>
  
-             <Button onPress={handleSubmit(onSubmit)} style={{ marginTop: 15,  marginBottom: 15, alignSelf: 'center'}} transparent> 
+             <TouchableOpacity onPress={handleSubmit(onSubmit)} style={{ marginTop: 15,  marginBottom: 15, alignSelf: 'center'}} transparent> 
                 <LinearGradient colors={[ColorsApp.SECOND, ColorsApp.PRIMARY]} start={[0, 0]} end={[1, 0]} style={styles.button_auth}>  
-                    <Text style={{color: '#FFFFFF', fontWeight: 'bold', fontSize: 14,}}>
-                      {Strings.ST28.toUpperCase()}
-                    </Text>
+       					{isLoading?
+						<Spinner color='white' /> 
+						: <Text style={{color: '#FFFFFF', fontWeight: 'bold', fontSize: 14,}}>
+							{Strings.ST28.toUpperCase() }     
+                    	  </Text>
+					}
                  </LinearGradient>
-             </Button>
+             </TouchableOpacity>
+			
 
             
             <TouchableOpacity  onPress={()=>navigation.navigate("ForgetPasswordScreen")} style={styles.text_auth} activeOpacity={1}>
